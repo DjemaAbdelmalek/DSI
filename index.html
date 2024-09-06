@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSI Support</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+</head>
+<body>
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Password</h2>
+            <input id="password-input" class="input-field" type="password" placeholder="Password">
+            <button id="password-submit-btn" class="add-btn">Submit</button>
+            <span id="password-error" class="error hidden">Incorrect password</span>
+        </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="header">
+        <div class="logo">DSI SUPPORT</div>
+    </div>
+    <div class="search-container">
+        <input id="search" class="search-input" type="text" placeholder="Search by title...">
+        <button id="add-btn" class="add-btn">Add Command</button>
+    </div>
+    <div class="add-container hidden" id="add-container">
+        <input id="title-input" class="input-field" type="text" placeholder="Title">
+        <textarea id="command-input" class="input-field" placeholder="Command"></textarea>
+        <button id="confirm-add-btn" class="add-btn">Add</button>
+    </div>
+    <div id="squares-container" class="squares-container"></div>
+    <div class="pagination">
+        <button id="prev" class="page-btn">Previous</button>
+        <span id="page-info"></span>
+        <button id="next" class="page-btn">Next</button>
+    </div>
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Command</h2>
+            <input id="modal-title-input" class="input-field" type="text" placeholder="Title">
+            <textarea id="modal-command-input" class="input-field" placeholder="Command"></textarea>
+            <button id="save-btn" class="add-btn">Save</button>
+        </div>
+    </div>
+    <div id="copy-notification" class="notification hidden">Copied to clipboard!</div>
+    <script src="script.js"></script>
+</body>
+</html>
