@@ -1,4 +1,3 @@
-
 html, body {
     margin: 0;
     padding: 0;
@@ -35,7 +34,8 @@ body {
 }
 
 .search-input {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ddd;
@@ -282,28 +282,6 @@ textarea {
     opacity: 1;
     visibility: visible;
 }
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black background with opacity */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-    max-width: 400px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-}
 
 .error {
     color: red;
@@ -312,4 +290,23 @@ textarea {
 
 .error.hidden {
     display: none;
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    .squares-container {
+        flex-direction: column;
+    }
+
+    .square {
+        width: 100%; /* Full width on small screens */
+        margin-bottom: 20px; /* Space between squares */
+    }
+}
+
+@media (max-width: 480px) {
+    .search-input {
+        width: 100%;
+        max-width: none;
+    }
 }
