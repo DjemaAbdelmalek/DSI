@@ -365,7 +365,10 @@ textarea {
 .edit-modal h2 {
     margin-top: 0;
     font-size: 24px;
-    color: #00f; /* Blue color for the header */
+    color: #00f;
+    font-family: "SUSE", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal; /* Blue color for the header */
 }
 
 .edit-modal input {
@@ -376,6 +379,9 @@ textarea {
     border-radius: 5px;
     background: #fff;
     color: #000;
+    font-family: "SUSE", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
 }
 
 .edit-modal button {
