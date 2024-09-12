@@ -1,15 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Protest+Guerrilla&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=SUSE:wght@100..800&display=swap');
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
 }
+.roboto-black-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: italic;
+  }
 
 body {
-    font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    filter:  drop-shadow(0px 20px 10px rgba(0, 0, 0,0.3 ));
+    filter: blur($120px);
+    font-family: "SUSE", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    
+
 }
 
 .header {
@@ -114,6 +127,9 @@ textarea {
     display: flex;
     flex-direction: column;
     backdrop-filter: blur(10px);
+    filter:  drop-shadow(0px 20px 10px rgba(0, 0, 0,0.3 ));
+    filter: blur($120px);
+
 }
 
 .title-container {
@@ -123,8 +139,13 @@ textarea {
 }
 
 .title {
+    font-family: "SUSE", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+
     font-size: 14px;
-    font-weight: bold;
+
     margin-bottom: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -132,7 +153,10 @@ textarea {
 }
 
 .command {
-    font-family: monospace;
+    font-family: "SUSE", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
     font-size: 12px;
     overflow: hidden;
     white-space: nowrap;
@@ -151,7 +175,7 @@ textarea {
     gap: 10px;
 }
 
-.copy-btn, .delete-btn {
+.copy-btn, .delete-btn, .edit-btn {
     background-color: #f0f0f0; /* Light gray background for better icon visibility */
     color: #333; /* Dark color for better contrast */
     border: none;
@@ -173,12 +197,20 @@ textarea {
     background-color: #ffe7e7; /* Light red for delete button */
 }
 
+.edit-btn {
+    background-color: #fff4e7; /* Light orange for edit button */
+}
+
 .copy-btn:hover {
     background-color: #d0e0ff; /* Slightly darker blue on hover */
 }
 
 .delete-btn:hover {
     background-color: #f0c9c9; /* Slightly darker red on hover */
+}
+
+.edit-btn:hover {
+    background-color: #ffdfc2; /* Slightly darker orange on hover */
 }
 
 .pagination {
@@ -228,7 +260,7 @@ textarea {
 }
 
 .close {
-    color: #aaa;
+    color: #e42a2a;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -283,6 +315,7 @@ textarea {
     visibility: visible;
 }
 
+
 .error {
     color: red;
     margin-top: 10px;
@@ -291,6 +324,186 @@ textarea {
 .error.hidden {
     display: none;
 }
+
+
+/* Glass effect style for the edit modal */
+.edit-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 500px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    z-index: 1000;
+}
+
+.edit-modal-content {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.edit-modal h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #00f; /* Blue color for the header */
+}
+
+.edit-modal input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+    color: #000;
+}
+
+.edit-modal button {
+    width: 100%;
+    padding: 10px;
+    background: #00f; /* Blue color for the button */
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.edit-modal button:hover {
+    background: #0056b3; /* Darker blue on hover */
+}
+
+.edit-modal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-modal .close:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+/* Hide elements with the 'hidden' class */
+.hidden {
+    display: none;
+}
+
+/* Glass effect style for the edit modal */
+.edit-modal {
+    display: none; /* Ensure it's hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 500px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    z-index: 1000;
+}
+
+.edit-modal-content {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.edit-modal h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #00f; /* Blue color for the header */
+}
+
+.edit-modal input,
+.edit-modal textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+    color: #000;
+}
+
+.edit-modal button {
+    width: 100%;
+    padding: 10px;
+    background: #00f; /* Blue color for the button */
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.edit-modal button:hover {
+    background: #0056b3; /* Darker blue on hover */
+}
+
+.edit-modal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(216, 22, 22, 0.5);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-modal .close:hover {
+    background: rgba(230, 3, 3, 0.8);
+}
+/* Notification styling */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.notification.visible {
+    opacity: 1;
+}
+
+.notification.hidden {
+    display: none;
+}
+
 
 /* Media Queries for Mobile Devices */
 @media (max-width: 768px) {

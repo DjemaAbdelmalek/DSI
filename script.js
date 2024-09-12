@@ -29,8 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitleInput = document.getElementById('modal-title-input');
     const modalCommandInput = document.getElementById('modal-command-input');
     const saveBtn = document.getElementById('save-btn');
-    const closeModalBtn = document.querySelector('.close');
+    const closeModalBtn = document.querySelector('.edit-modal .close');
     const copyNotification = document.getElementById('copy-notification');
+    const successNotification = document.getElementById('success-notification');
     const prevBtn = document.getElementById('prev');
     const nextBtn = document.getElementById('next');
     const pageInfo = document.getElementById('page-info');
@@ -38,7 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPage = 1;
     const itemsPerPage = 10;
-    const correctPassword = 'ymar4202'; // Change this to your desired password
+    const correctPassword = '1221';
+    let currentEditKey = null; // Track the square being edited
 
     function showPasswordModal() {
         passwordModal.style.display = 'block';
@@ -48,6 +50,25 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordModal.style.display = 'none';
     }
 
+    function showEditModal() {
+        editModal.style.display = 'block';
+    }
+
+    function hideEditModal() {
+        editModal.style.display = 'none';
+    }
+
+    function showNotification(notificationElement, message) {
+        console.log("Showing notification:", message); // Debug statement
+        notificationElement.textContent = message;
+        notificationElement.classList.add('visible');
+        setTimeout(() => {
+            notificationElement.classList.remove('visible');
+        }, 2000); // Duration for the notification to be visible
+    }
+    
+    
+
     function handlePasswordSubmit() {
         const enteredPassword = passwordInput.value.trim();
         if (enteredPassword === correctPassword) {
@@ -56,15 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             passwordError.classList.remove('hidden');
         }
-    }
-
-    function updateLocalStorage() {
-        // Get all squares from Firebase and save to localStorage
-        database.ref('squares').once('value').then(snapshot => {
-            const squaresData = snapshot.val() || {};
-            localStorage.setItem('squaresData', JSON.stringify(squaresData));
-            renderSquares();
-        });
     }
 
     function renderSquares(searchTerm = '') {
@@ -77,14 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const paginatedData = filteredData.slice(startIndex, endIndex);
 
             paginatedData.forEach((data, index) => {
+                const squareKey = Object.keys(squaresData)[index + startIndex];
                 const square = document.createElement('div');
                 square.className = 'square';
-                square.dataset.key = Object.keys(squaresData)[index + startIndex];
+                square.dataset.key = squareKey;
                 square.innerHTML = `
                     <div class="title-container">
                         <div class="title">${data.title || 'No Title'}</div>
                         <div class="button-container">
                             <button class="copy-btn" title="Copy Command">📋</button>
+                            <button class="edit-btn" title="Edit Command">✏️</button>
                             <button class="delete-btn" title="Delete Command">🗑️</button>
                         </div>
                     </div>
@@ -104,40 +118,59 @@ document.addEventListener('DOMContentLoaded', () => {
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
     }
 
-    function showNotification() {
-        copyNotification.classList.add('visible');
-        setTimeout(() => {
-            copyNotification.classList.remove('visible');
-        }, 2000); // Notification will be visible for 2 seconds
-    }
-
     function addSquare(title, command) {
         const newSquareRef = database.ref('squares').push();
+        const squareId = newSquareRef.key; // Firebase generated ID
         newSquareRef.set({
+            id: squareId, // Add ID to square
             title: title,
             command: command
         }).then(() => {
-            renderSquares(searchInput.value); // Pass search term to renderSquares
+            renderSquares(searchInput.value);
         }).catch(error => {
             console.error('Error adding square:', error);
         });
     }
 
     function handleDelete(key) {
-        database.ref('squares/' + key).remove()
-            .then(() => {
-                renderSquares(searchInput.value); // Pass search term to renderSquares
-            })
-            .catch(error => {
-                console.error('Error deleting square:', error);
-            });
+        const userConfirmed = confirm('Are you sure you want to delete this item?');
+        if (userConfirmed) {
+            database.ref('squares/' + key).remove()
+                .then(() => {
+                    renderSquares(searchInput.value);
+                })
+                .catch(error => {
+                    console.error('Error deleting square:', error);
+                });
+        }
     }
-
     function handleCopy(text) {
         navigator.clipboard.writeText(text).then(() => {
-            showNotification();
+            showNotification(copyNotification, 'Command copied!');
         }).catch(err => {
             console.error('Failed to copy text: ', err);
+        });
+    }
+
+    function saveEdit() {
+        // Assuming save logic here
+        showNotification(successNotification, 'Changes saved successfully!');
+    }
+
+    function handleEdit(key) {
+        database.ref('squares/' + key).once('value').then(snapshot => {
+            const squareData = snapshot.val();
+            currentEditKey = key;
+            modalTitleInput.value = squareData.title || '';
+            modalCommandInput.value = squareData.command || '';
+            showEditModal(); // Show the edit modal
+        });
+    }       
+
+    function confirmEdit() {
+        return new Promise((resolve) => {
+            const userConfirmed = confirm('Are you sure you want to save these changes?');
+            resolve(userConfirmed);
         });
     }
 
@@ -159,40 +192,58 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
-            renderSquares(searchInput.value); // Pass search term to renderSquares
+            renderSquares(searchInput.value);
         }
     });
 
     nextBtn.addEventListener('click', () => {
         currentPage++;
-        renderSquares(searchInput.value); // Pass search term to renderSquares
-    });
-
-    squaresContainer.addEventListener('click', (event) => {
-        const square = event.target.closest('.square');
-        const key = square.dataset.key;
-
-        if (event.target.classList.contains('copy-btn')) {
-            const commandText = square.querySelector('.command').textContent.trim();
-            handleCopy(commandText);
-        }
-
-        if (event.target.classList.contains('delete-btn')) {
-            handleDelete(key);
-        }
-    });
-
-    closeModalBtn.addEventListener('click', () => {
-        editModal.classList.add('hidden');
+        renderSquares(searchInput.value);
     });
 
     searchInput.addEventListener('input', () => {
-        currentPage = 1; // Reset to first page on search
-        renderSquares(searchInput.value); // Pass search term to renderSquares
+        currentPage = 1;
+        renderSquares(searchInput.value);
     });
 
     passwordSubmitBtn.addEventListener('click', handlePasswordSubmit);
 
-    // Show password modal on page load
+    squaresContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            const key = e.target.closest('.square').dataset.key;
+            handleDelete(key);
+        } else if (e.target.classList.contains('copy-btn')) {
+            const command = e.target.closest('.square').querySelector('.command').textContent;
+            handleCopy(command);
+        } else if (e.target.classList.contains('edit-btn')) {
+            const key = e.target.closest('.square').dataset.key;
+            handleEdit(key);
+        }
+    });
+
+    saveBtn.addEventListener('click', async () => {
+        const updatedTitle = modalTitleInput.value.trim();
+        const updatedCommand = modalCommandInput.value.trim();
+    
+        const userConfirmed = await confirmEdit();
+        if (userConfirmed && currentEditKey && updatedTitle && updatedCommand) {
+            database.ref('squares/' + currentEditKey).update({
+                title: updatedTitle,
+                command: updatedCommand
+            }).then(() => {
+                hideEditModal();
+                showNotification(successNotification, 'Changes saved successfully!');
+                renderSquares(searchInput.value);
+            }).catch(error => {
+                console.error('Error updating square:', error);
+            });
+        }
+    });
+    
+
+    closeModalBtn.addEventListener('click', () => {
+        hideEditModal();
+    });
+
     showPasswordModal();
 });
