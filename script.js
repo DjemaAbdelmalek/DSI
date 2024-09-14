@@ -59,15 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showNotification(notificationElement, message) {
-        console.log("Showing notification:", message); // Debug statement
         notificationElement.textContent = message;
         notificationElement.classList.add('visible');
         setTimeout(() => {
             notificationElement.classList.remove('visible');
         }, 2000); // Duration for the notification to be visible
     }
-    
-    
 
     function handlePasswordSubmit() {
         const enteredPassword = passwordInput.value.trim();
@@ -83,13 +80,21 @@ document.addEventListener('DOMContentLoaded', () => {
         database.ref('squares').once('value').then(snapshot => {
             const squaresData = snapshot.val() || {};
             squaresContainer.innerHTML = '';
-            const filteredData = Object.values(squaresData).filter(data => data.title.toLowerCase().includes(searchTerm.toLowerCase()));
+
+            // Filter and paginate data
+            const filteredKeys = Object.keys(squaresData).filter(key => 
+                squaresData[key].title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            const filteredData = Object.values(squaresData).filter(data => 
+                data.title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const paginatedData = filteredData.slice(startIndex, endIndex);
 
             paginatedData.forEach((data, index) => {
-                const squareKey = Object.keys(squaresData)[index + startIndex];
+                const squareKey = filteredKeys[index + startIndex]; // Use filtered keys
                 const square = document.createElement('div');
                 square.className = 'square';
                 square.dataset.key = squareKey;
@@ -144,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     }
+
     function handleCopy(text) {
         navigator.clipboard.writeText(text).then(() => {
             showNotification(copyNotification, 'Command copied!');
@@ -153,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveEdit() {
-        // Assuming save logic here
         showNotification(successNotification, 'Changes saved successfully!');
     }
 
@@ -165,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalCommandInput.value = squareData.command || '';
             showEditModal(); // Show the edit modal
         });
-    }       
+    }
 
     function confirmEdit() {
         return new Promise((resolve) => {
@@ -224,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveBtn.addEventListener('click', async () => {
         const updatedTitle = modalTitleInput.value.trim();
         const updatedCommand = modalCommandInput.value.trim();
-    
+
         const userConfirmed = await confirmEdit();
         if (userConfirmed && currentEditKey && updatedTitle && updatedCommand) {
             database.ref('squares/' + currentEditKey).update({
@@ -239,7 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-    
 
     closeModalBtn.addEventListener('click', () => {
         hideEditModal();
